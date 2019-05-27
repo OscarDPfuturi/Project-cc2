@@ -3,7 +3,7 @@
 #include "inicia.h"
 #include <locale.h>
 
-const int maxdisp = 15, ANCHO = 500, ALTO = 450;
+const int maxdisp = 10, ANCHO = 500, ALTO = 450;
 
 
 /*template <class obj>
@@ -32,7 +32,7 @@ struct NAVE{
     int x,y;
     int dir;
     int ndisparos;
-}nav = {250,300,1,0};
+}nav = {ANCHO/2-20,3*ALTO/4,1,0};
 
 struct Balas{
    int x, y;
@@ -47,50 +47,53 @@ void mostrar_nave(BITMAP *nave,BITMAP *buffer,struct NAVE nav)
 
 int main()
 {
-    setlocale(LC_ALL,"spanish");
+    setlocale(LC_ALL,"spanish");//gramática
 
     //Nave nave_jugador(250,300,1);
 
 
-
-
     inicia_allegro(ANCHO,ALTO);
-    inicia_audio(70,70);
+
+    SAMPLE *archivo_sonido = load_wav("RE3-fin.wav");
+
+    inicia_audio(330,300,archivo_sonido);
 
     BITMAP *nave = load_bitmap("nave.bmp",NULL);
     BITMAP *fondo = load_bitmap("espacio.bmp",NULL);
-    BITMAP *bala = load_bitmap("bala2.bmp", NULL);  // otra cosa
+    BITMAP *bala = load_bitmap("bala.bmp", NULL);  // otra cosa
     BITMAP *buffer = create_bitmap(ANCHO,ALTO);
+
+
 
     //nave_jugador.mostrar_nave(nave,buffer);
 
-    int i = 450 ,dsw=0, contt = 0;
+    int i = ALTO ,flag_dispara=0, contt = 0;
     while(!key[KEY_ESC]){
+
+        blit(fondo,buffer,0,--i,0,0,ANCHO,ALTO);  if(i == 0) i=ALTO;
+        mostrar_nave(nave,buffer,nav);
 
         textout_centre_ex(buffer, font, "Vidas: ", 50, 25, 0xffffff, 0x999999);
         textprintf_centre_ex(buffer, font, 75, 25, 0xffffff, 0x999999,"%d",4);//vidas...
 
-        blit(fondo,buffer,0,--i,0,0,ANCHO,ALTO);  if(i == 0) i=450;
-        mostrar_nave(nave,buffer,nav);
+        textout_centre_ex(buffer, font, "SHOOTING PLANES", 150, 25, 0xffffff, 0x999999);
 
-
-
-       if(key[KEY_UP])
+       if(key[KEY_UP] && nav.y > 0)
        { nav.dir = 1; nav.y -= 2; }
 
-       else if(key[KEY_DOWN])
+       else if(key[KEY_DOWN] && nav.y < ALTO-47)
        { nav.dir = 1; nav.y += 2; }
 
-       if(key[KEY_RIGHT])
+       if(key[KEY_RIGHT] && nav.x < ANCHO-40)
        { nav.dir = 2; nav.x += 2; }
 
-       else if(key[KEY_LEFT])
+       else if(key[KEY_LEFT] && nav.x > 0)
        { nav.dir = 0; nav.x -= 2; }
 
        else nav.dir = 1;
 
        ////rutina de disparos
-       if(key[KEY_SPACE]  && dsw == 0)
+       if(key[KEY_SPACE]  && flag_dispara == 0)
        {
         if(nav.ndisparos < maxdisp)
         {
@@ -99,12 +102,12 @@ int main()
          disparos[nav.ndisparos].y = nav.y + 2;
          disparos[nav.ndisparos].dx = 0;
          disparos[nav.ndisparos].dy = -3;
-         dsw = 1;
+         flag_dispara = 1;
         }
 
        }
        if (contt++ > 10){
-        dsw = 0; contt = 0;
+        flag_dispara = 0; contt = 0;
        }
        if(nav.ndisparos > 0)
        {
@@ -124,11 +127,11 @@ int main()
 
         }
        }
-       blit(buffer,screen,0,0,0,0,500,450);
+       blit(buffer,screen,0,0,0,0,ANCHO,ALTO);
        rest(10);
 
     }
-
+    destroy_sample(archivo_sonido);
     destroy_bitmap(buffer);
     destroy_bitmap(nave);
     destroy_bitmap(fondo);
