@@ -3,27 +3,10 @@
 #include <allegro.h>
 #include "inicia.h"
 #include <conio.h>
+#include "nave.h"
+#include "bala.h"
 
 const int maxdisp = 10, ANCHO = 500, ALTO = 450;
-
-class Nave{
-    int x,y;
-    int dir;
-
-public:
-    Nave(){};
-    Nave(int _x,int _y,int _dir) : x(_x), y(_y), dir(_dir){};
-    ~Nave(){};
-    virtual void mostrar_nave(BITMAP*,BITMAP*);
-    virtual void mover();
-    int getX(){return x;}
-    int getY(){return y;}
-
-    void setX(const int _x){x = _x;}
-    void setY(const int _y){y = _y;}
-
-    void borrar();
-};
 
 void Nave::mostrar_nave(BITMAP* nave,BITMAP* buffer){
     masked_blit(nave, buffer, 40*dir, 0, x, y, 40, 47);
@@ -46,22 +29,6 @@ void Nave::mover(){
 }
 
 
-class Bala : public Nave{
-    int dx,dy;
-
-public:
-    Bala(){};
-    //Bala(int _x,int _y,int _dx,int _dy) : Nave(_x,_y){};
-    void mostrar_nave(BITMAP*,BITMAP*,Nave);
-
-    ~Bala(){};
-    int getdX(){return dx;}
-    int getdY(){return dy;}
-    void setdX( int _dx){dx = _dx;}
-    void setdY( int _dy){dy = _dy;}
-
-    void mover(BITMAP*,BITMAP*);
-};
 
 void Bala::mostrar_nave(BITMAP* bala,BITMAP* buffer,Nave nave_jugador){
     masked_blit(bala, buffer, 0, 0,getX() ,getY(), 6, 6);

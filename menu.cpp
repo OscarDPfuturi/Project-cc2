@@ -1,7 +1,5 @@
-#include <allegro.h>
-#include "inicia.h"
 
-int main(){
+/*int main(){
     inicia_allegro(500,450);
     install_mouse();
 
@@ -16,4 +14,4 @@ int main(){
 
         }
     }
-}
+}*/
