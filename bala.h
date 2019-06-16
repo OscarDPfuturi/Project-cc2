@@ -14,6 +14,6 @@ public:
     void setdX( int _dx){dx = _dx;}
     void setdY( int _dy){dy = _dy;}
 
-    void mover(BITMAP*,BITMAP*);
+    void mover();
 };
 
