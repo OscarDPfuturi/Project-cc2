@@ -1,36 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <allegro.h>
-#include "inicia.h"
 #include <conio.h>
+#include "inicia.h"
+
 #include "nave.h"
 #include "bala.h"
 
-const int maxdisp = 10, ANCHO = 640, ALTO = 480;
 
-void Nave::mostrar_nave(BITMAP* nave,BITMAP* buffer){
-    masked_blit(nave, buffer, 40*dir, 0, x, y, 40, 47);
-}
-
-void Nave::mover(){
-    if(key[KEY_UP] && y > 0)
-       { dir = 1; y -= 2; }
-
-       else if(key[KEY_DOWN] && y < ALTO-47)
-       { dir = 1; y += 2; }
-
-       if(key[KEY_RIGHT] && x < ANCHO-40)
-       { dir = 2; x += 2; }
-
-       else if(key[KEY_LEFT] && x > 0)
-       { dir = 0; x -= 2; }
-
-       else dir = 1;
+void Bala::contacto(Nave nave,BITMAP* buffer){
+    if (getX() == nave.getX() && getY() == nave.getY()){
+        //Nave::borrar();
+        textout_centre_ex(buffer, font, "LE DISTE", ANCHO/2, ALTO/2, 0xffffff, 0x999999);
+    }
 }
 
 
 
-void Bala::mostrar_nave(BITMAP* bala,BITMAP* buffer,Nave nave_jugador){
+void Bala::mostrar_nave(BITMAP* bala,BITMAP* buffer,Nave* nave_jugador){
     masked_blit(bala, buffer, 0, 0,getX() ,getY(), 6, 6);
 }
 
@@ -43,33 +29,44 @@ void Bala::mover(){
 int main()
 {
     //setlocale(LC_ALL,"spanish");//gramática
-    Nave nave_jugador(ANCHO/2-20,3*ALTO/4,1);
+    Nave *nave_jugador = new Nave();
+    nave_jugador->setX(ANCHO/2-20);
+    nave_jugador->setY(3*ALTO/4);
+    nave_jugador->setDir(1);
 
     Bala *bala_jugador[maxdisp];
-
+    Nave *nave_enemigo[maxdisp];
     for (int i=0;i<maxdisp;i++){
         bala_jugador[i] = new Bala();
-
+        nave_enemigo[i] = new Nave();
     }
+
+    nave_enemigo[0]->setX(ANCHO/2-22);
+    nave_enemigo[0]->setY(1);
+
+
 
     //inicia la libreria de allegro...
     inicia_allegro(ANCHO,ALTO);
 
-    //BITMAP *buffer = create_bitmap(640, 480);
-	BITMAP *fondo_menu = load_bitmap("simple1f.bmp",NULL);;
+    //inicia el menu de fondo...
+	BITMAP *fondo_menu = load_bitmap("simple1f.bmp",NULL);
 	BITMAP *fondo_menu2 = load_bitmap("simple1n.bmp",NULL);
 	BITMAP *cursor = load_bitmap("cursor.bmp",NULL);
 	BITMAP *buffer = create_bitmap(ANCHO,ALTO);
 
-	// inicializa las variables
-	//clear_to_color(buffer, 0x333333);
 
+	//clear_to_color(buffer, 0x333333);
+    //inicializa el sonido
     SAMPLE *archivo_sonido;
 
+    //inicializa las naves y el fondo de juego
     BITMAP *nave = load_bitmap("nave.bmp",NULL);
     BITMAP *fondo = load_bitmap("espacio3.bmp",NULL);
     BITMAP *bala = load_bitmap("bala.bmp", NULL);  // otra cosa
 
+    BITMAP *nave_e1 = load_bitmap("enemigo2.bmp",NULL);
+    BITMAP *nave_e2 = load_bitmap("enemigo1.bmp",NULL);
 
     int i = ALTO ,flag_dispara=0, contt = 0,nro_disparos=0;
 
@@ -77,6 +74,7 @@ int main()
 
     // menu simple
 	while (!salida){
+        textout_centre_ex(buffer, font, "SHOOTING PLANES", ANCHO/2, ALTO/4, 0xffffff, 0x999999);
         // pinta el cursor
         masked_blit(cursor, buffer, 0, 0, mouse_x, mouse_y, 13,22);
 
@@ -88,6 +86,8 @@ int main()
             mouse_y > 295 && mouse_y < 340){
 
             blit(fondo_menu2, buffer, 0, 0, 0, 0, ANCHO, ALTO);
+
+
 
             // se ha pulsado el boton del raton
             if ( mouse_b & 1 ){
@@ -101,20 +101,21 @@ int main()
                     blit(fondo,buffer,0,--i,0,0,ANCHO,ALTO);
                     if(i == 0) i=ALTO;
 
-                    nave_jugador.mostrar_nave(nave,buffer);
-
                     textout_centre_ex(buffer, font, "Vidas: ", 50, 25, 0xffffff, 0x999999);
                     textprintf_centre_ex(buffer, font, 75, 25, 0xffffff, 0x999999,"%d",4);//vidas...
 
-                    textout_centre_ex(buffer, font, "SHOOTING PLANES", 150, 25, 0xffffff, 0x999999);
 
-                    nave_jugador.mover();
+                    nave_jugador->mostrar_nave(nave,buffer);
+                    nave_jugador->mover();
+
+                    nave_enemigo[0]->mostrar_enemigo(nave_e1,buffer);
+                    //nave_enemigo[0]->mover();
 
                     //rutina de disparos
                     if(key[KEY_SPACE]  && flag_dispara == 0){
                         if(nro_disparos < maxdisp){
-                            bala_jugador[nro_disparos]->setX(nave_jugador.getX()+20);
-                            bala_jugador[nro_disparos]->setY(nave_jugador.getY()+3);
+                            bala_jugador[nro_disparos]->setX(nave_jugador->getX()+20);
+                            bala_jugador[nro_disparos]->setY(nave_jugador->getY()+3);
                             bala_jugador[nro_disparos]->setdX(0);
                             bala_jugador[nro_disparos]->setdY(3);
                             nro_disparos++;
