@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+
+const int maxdisp = 10;
+
 #include "inicia.h"
 
 #include "nave.h"
 #include "bala.h"
+
 
 
 void Bala::contacto(Nave nave,BITMAP* buffer){
@@ -26,6 +30,7 @@ void Bala::mover(){
 }
 
 
+
 int main()
 {
     //setlocale(LC_ALL,"spanish");//gramática
@@ -36,6 +41,7 @@ int main()
 
     Bala *bala_jugador[maxdisp];
     Nave *nave_enemigo[maxdisp];
+
     for (int i=0;i<maxdisp;i++){
         bala_jugador[i] = new Bala();
         nave_enemigo[i] = new Nave();
@@ -65,7 +71,7 @@ int main()
     BITMAP *fondo = load_bitmap("espacio3.bmp",NULL);
     BITMAP *bala = load_bitmap("bala.bmp", NULL);  // otra cosa
 
-    BITMAP *nave_e1 = load_bitmap("enemigo2.bmp",NULL);
+    BITMAP *nave_e1 = load_bitmap("enemigo1.bmp",NULL);
     BITMAP *nave_e2 = load_bitmap("enemigo1.bmp",NULL);
 
     int i = ALTO ,flag_dispara=0, contt = 0,nro_disparos=0;
@@ -90,7 +96,7 @@ int main()
 
 
             // se ha pulsado el boton del raton
-            if ( mouse_b & 1 ){
+            if ( mouse_b & 1){
 
                 //sonido...
                 archivo_sonido = load_wav("audio01.wav");
@@ -113,11 +119,13 @@ int main()
 
                     //rutina de disparos
                     if(key[KEY_SPACE]  && flag_dispara == 0){
-                        if(nro_disparos < maxdisp){
+                        if(nro_disparos < maxdisp-1){
+
                             bala_jugador[nro_disparos]->setX(nave_jugador->getX()+20);
                             bala_jugador[nro_disparos]->setY(nave_jugador->getY()+3);
                             bala_jugador[nro_disparos]->setdX(0);
                             bala_jugador[nro_disparos]->setdY(3);
+
                             nro_disparos++;
                             flag_dispara = 1;
                         }
@@ -125,36 +133,35 @@ int main()
 
                     if(nro_disparos > 0){
                         for(int cont = 0; cont < nro_disparos; cont++){
+
+                            bala_jugador[cont]->mostrar_nave(bala,buffer,nave_jugador);
+
                             bala_jugador[cont]->mover();
 
                             /*bala_jugador[cont]->setX(bala_jugador[cont]->getX() + bala_jugador[cont]->getdX()); mueve la bala
                             bala_jugador[cont]->setY(bala_jugador[cont]->getY() - bala_jugador[cont]->getdY());*/
-                            bala_jugador[cont]->mostrar_nave(bala,buffer,nave_jugador);
-
                             if (bala_jugador[cont]->getY() > ALTO || bala_jugador[cont]->getY() < 0 ||
                                 bala_jugador[cont]->getX() > ANCHO || bala_jugador[cont]->getX() < 0){
-                                /*int aux= *(A+t-1);
-                                for (int i=t-1; i>=0; i--){
-                                    *(A+i) = *(A+i-1);
+
+                                for (int i=0; i<nro_disparos; i++){
+                                    bala_jugador[i] = bala_jugador[i+1];
                                 }
-                                *A = aux;*/
-                                bala_jugador[cont] = bala_jugador[nro_disparos];
+
                                 nro_disparos--;
-                                if (nro_disparos < 0)
-                                    nro_disparos = 0;
+                                if (nro_disparos < 0) nro_disparos = 0;
+
+                                bala_jugador[nro_disparos] = new Bala();
                             }
+                        }
+                        if (contt++ > 20){
+                            flag_dispara = 0; contt = 0;
                         }
                     }
 
-                    if (contt++ > 20){
-                        flag_dispara = 0; contt = 0;
-                    }
-
-                   blit(buffer,screen,0,0,0,0,ANCHO,ALTO);
-                   rest(10);
-
+                    blit(buffer,screen,0,0,0,0,ANCHO,ALTO);
+                    rest(10);
                 }
-                  salida = true;
+                salida = true;
             }
         }
         else{
@@ -165,7 +172,6 @@ int main()
         }
     }
 
-    // inicializa las variables con el nuevo menu
     salida = false;
 	destroy_bitmap(fondo_menu);
 	destroy_bitmap(fondo_menu2);
