@@ -6,17 +6,19 @@ class Nave{
     int x,y;
     int dir;
     int vidas;
+    int tipo;
 
 public:
 
     Nave(){};
     Nave(int _x,int _y,int _dir) : x(_x), y(_y), dir(_dir){};
+    Nave(int _x,int _y) : x(_x), y(_y){};
     ~Nave(){};
-    virtual void mostrar(BITMAP*,BITMAP*,int);
+    virtual void mostrar(BITMAP*,BITMAP*);
 
-     void mover(int);
+    void mover();
 
-    virtual bool contacto(Nave);
+    virtual bool contacto(Nave*);
 
     int getVida(){return vidas;};
     void setVida(int _vida){vidas = _vida;};
@@ -28,6 +30,14 @@ public:
     void setY(const int _y){y = _y;}
     void setDir(const int _dir){dir = _dir;}
 
-    void borrar();
+    void setTipo(const int _tipo){tipo = _tipo;}
+    int getTipo(){return tipo;}
+
+    void borrar(){/*;
+
+                        destroy_bitmap(nave_e1);
+                        Enemigo *nave_enemigo2 = new Enemigo();
+                        nave_enemigo2->setX(0);
+                        nave_enemigo2->setY(0);*/};
 };
 

@@ -4,7 +4,8 @@ class Bala : public Nave{
 
 public:
     Bala(){};
-    void mostrar(BITMAP*,BITMAP*,int);
+    Bala(int,int,int,int);
+    void mostrar(BITMAP*,BITMAP*);
 
     ~Bala(){};
     int getdX(){return dx;}
@@ -14,6 +15,6 @@ public:
 
     void mover();
 
-    bool contacto(Nave*,int);
+    bool contacto(Nave*);
 };
 

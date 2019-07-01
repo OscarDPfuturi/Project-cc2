@@ -1,24 +1,22 @@
 #include "nave.h"
 
-/*Nave::Nave(int _x,int _y,int _dx){
-    setX(_x);
-    setY(_y);
-    dx = _dx;
-}*/
-
-void Nave::mostrar(BITMAP* nave,BITMAP* buffer,int tipo){
-    switch (tipo){
+void Nave::mostrar(BITMAP* nave,BITMAP* buffer){
+    switch (getTipo()){
     case 1:
         masked_blit(nave, buffer, 40*dir, 0, x, y, 40, 47); break;
     case 2:
         masked_blit(nave, buffer, 0, 0, x, y, 62, 62); break;
     case 3:
         masked_blit(nave, buffer, 0, 0, x, y, 44, 40); break;
+    case 4:
+        masked_blit(nave, buffer, 0, 0, x, y, 44, 40); break;
+    case 5:
+        masked_blit(nave, buffer, 0, 0, x, y, 37, 51); break;
     }
 }
 
-void Nave::mover(int tipo){
-    switch (tipo){
+void Nave::mover(){
+    switch (getTipo()){
     case 1://movimiento de la nave del jugador
         if(key[KEY_UP] && y > 0)
             { dir = 1; y -= 2; }
@@ -34,7 +32,7 @@ void Nave::mover(int tipo){
 
         else dir = 1; break;
     case 2://movimiento de los enemigos 2,3,...
-        if (getY() < ALTO-50){
+        if (getY() < ALTO-10){
             setY(getY()+2);
         }
         else{
@@ -57,12 +55,22 @@ void Nave::mover(int tipo){
             setX(ANCHO+25);
         }
         break;
+    case 5://movimiento de asteroide
+        if (getY() < ALTO-25){
+            setY(getY()+2);
+        }
+        else{
+            setY(-50);
+        }
+        break;
     }
 }
 
-bool Nave::contacto(Nave nave){
-    if (getX() == nave.getX()){
+bool Nave::contacto(Nave *nave){
+    if (getX()+20 > nave->getX() && getX()+20 < nave->getX()+40 &&
+        getY()+20 > nave->getY() && getY()+20 < nave->getY()+47){
         return 1;
     }
+
     return 0;
 }
