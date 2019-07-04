@@ -137,11 +137,6 @@ bool win(BITMAP *winner,BITMAP *buffer){
     return 1;
 }
 
-template <typename T>
-T crear_objeto(T *objeto){
-    objeto = new T();
-
-}
 
 int main()
 {
